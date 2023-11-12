@@ -28,17 +28,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $contraseña = $_POST["password"];
     $sal = "";
 
-    $cont = 0;
+    /*$cont = 0;
     while ($cont < 10) {
   	    $sal = $sal.chr(random_int(65, 90));
   	$cont++;
-    }
+    }*/
     
-    $contraseña_sal = $contraseña.$sal;
-    $hash_contraseña = hash('sha256',$contraseña_sal); //No me funciona el hash
+    //$contraseña_sal = $contraseña.$sal;
+    //$hash_contraseña = hash('sha256',$contraseña_sal); //No me funciona el hash
     //Validar parametros (Falta hacer)
 
-
+    $contra_hash = password_hash($contraseña, PASSWORD_DEFAULT);
     
     // Verifica la conexión
     if (!$conn) {
@@ -57,7 +57,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     // Asocia los parámetros con los valores
-    mysqli_stmt_bind_param($stmt, "sssssssss", $nombre, $apellidos, $dni, $telefono, $fechaNacimiento, $email, $usuario, $sal, $hash_contraseña); /*$hash_contraseña*/
+    mysqli_stmt_bind_param($stmt, "sssssssss", $nombre, $apellidos, $dni, $telefono, $fechaNacimiento, $email, $usuario, $sal, $contra_hash); /*$hash_contraseña*/
 
     // Ejecuta la consulta SQL
     if (mysqli_stmt_execute($stmt)) {

@@ -40,9 +40,22 @@ $pagina = isset($_GET['pagina']) ? $_GET['pagina'] : 1;
 $inicio = ($pagina - 1) * $porPagina;
 
 // Consulta SQL con LIMIT para paginación
-//$sql = "SELECT * FROM mytable WHERE Name LIKE '*$nombre*' AND Developer LIKE '*$creador*' AND Producer LIKE '*$productora*' AND Genre LIKE '*$genero*' AND Operating_System LIKE '*$sistema_operativo*' AND Date_Released LIKE '*$fecha_lanzamiento*' LIMIT $inicio, $porPagina";
 $sql = "SELECT * FROM mytable WHERE Name LIKE '%$nombre%' AND Developer LIKE '%$creador%' AND Producer LIKE '%$productora%' AND Genre LIKE '%$genero%' AND Operating_System LIKE '%$sistema_operativo%' AND Date_Released LIKE '%$fecha_lanzamiento%'";
-$result = $conn->query($sql);
+//Preparar la consulta 
+$stmt = mysqli_prepare($conn, $sql);
+// Verificar que la función 'mysqli_prepare' haya tenido éxito
+if (!$stmt) {
+    die("Error al preparar la consulta SQL: " . $conn->error);
+}
+
+// Asocia los parámetros con los valores
+mysqli_stmt_bind_param($stmt, "ssssss", $nombre, $creador, $productora, $genero, $sistema_operativo, $fecha_lanzamiento);
+
+// Ejecuta la consulta SQL
+mysqli_stmt_execute($stmt);
+
+// Obtiene el resultado
+$result = mysqli_stmt_get_result($stmt);
 
 }
 
@@ -110,7 +123,9 @@ $result = $conn->query($sql);
            else {
                 echo "No se encontraron registros.";
            }
-           $conn->close();
+           // Cierra la conexión y la declaración
+            mysqli_stmt_close($stmt);
+            mysqli_close($conn);
             ?>
             </table>
             <button class="button secondary-button" onclick="window.location.href='principal.php'">Volver a Juegos</button>

@@ -1163,6 +1163,24 @@ CREATE TABLE `usuarios` (
 
 INSERT INTO `usuarios` (`nombre`, `apellidos`, `dni`, `telefono`, `fecha_nacimiento`, `email`, `usuario`, `contraseña`) VALUES ('Ana', 'García', '99999999R', 600000000, '2023-10-14', 'ejemplo@gmail.com', 'Anita', 'contraseña1234');
 
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `usuarios_cod`
+--
+
+CREATE TABLE `usuarios_cod` (
+  `nombre` varchar(100) NOT NULL,
+  `apellidos` varchar(100) NOT NULL,
+  `dni` varchar(100) NOT NULL,
+  `telefono` varchar(100) NOT NULL,
+  `fecha_nacimiento` varchar(100) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `username` varchar(100) NOT NULL,
+  `sal` varchar(10) NOT NULL,
+  `password` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 --
 -- Índices para tablas volcadas
 --
@@ -1178,6 +1196,12 @@ ALTER TABLE `mytable`
 --
 ALTER TABLE `usuarios`
   ADD PRIMARY KEY (`dni`);
+
+--
+-- Indices de la tabla `usuarios_cod`
+--
+ALTER TABLE `usuarios_cod`
+  ADD PRIMARY KEY (`username`);
 
 --
 -- AUTO_INCREMENT de las tablas volcadas

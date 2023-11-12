@@ -59,28 +59,31 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $password = $_POST["password"];
     $actual=$_SESSION["usuario"];
 
-    $nombresql="UPDATE usuarios_cod SET nombre='$nombre' WHERE username='$actual' ";
-    $apellidossql="UPDATE usuarios_cod SET apellidos='$apellidos' WHERE username='$actual' ";
-    $telefonosql="UPDATE usuarios_cod SET telefono='$telefono' WHERE username='$actual' ";
-    $fechasql="UPDATE usuarios_cod SET fecha_nacimiento='$fecha_nacimiento' WHERE username='$actual' ";
-    $emailsql="UPDATE usuarios_cod SET email='$email' WHERE username='$actual' ";
-    //$usuariosql="UPDATE usuarios_cod SET dni='$dni' WHERE dni='$actual' ";
-    $contrasenasql="UPDATE usuarios_cod SET contraseña='$password' WHERE username='$actual' ";
+    $nombresql="UPDATE usuarios_cod SET nombre=? WHERE username=? ";
+    $nombrestmt=mysqli_prepare($conn, $nombresql);
 
-    /*if(!empty($usuario)){ //Haria falta hacerlo con el DNI
-        $ejecutar1=mysqli_query($conn,$usuariosql);
-        if($ejecutar1){
-        //Cerrar sesion
-          $_SESSION['usuario']=$usuario;
-          ?> 
-          <h3 class="bien">¡Nombre de usuario modificado correctamente!</h3>
-            <?php
-        }
-    }*/
+    $apellidossql="UPDATE usuarios_cod SET apellidos=? WHERE username=? ";
+    $apellidosstmt=mysqli_prepare($conn, $apellidossql);
+
+    $telefonosql="UPDATE usuarios_cod SET telefono=? WHERE username=? ";
+    $telefonostmt=mysqli_prepare($conn, $telefonosql);
+
+    $fechasql="UPDATE usuarios_cod SET fecha_nacimiento=? WHERE username=? ";
+    $fechastmt=mysqli_prepare($conn, $fechasql);
+
+    $emailsql="UPDATE usuarios_cod SET email=? WHERE username=? ";
+    $emailstmt=mysqli_prepare($conn, $emailsql);
+
+    //$usuariosql="UPDATE usuarios_cod SET dni='$dni' WHERE dni='$actual' ";
+    $contrasenasql="UPDATE usuarios_cod SET contraseña=? WHERE username=? ";
+    $contrasenastmt=mysqli_prepare($conn, $contrasenasql);
+
+    
     
     if(!empty($nombre)){
-        $ejecutar2=mysqli_query($conn,$nombresql);
-        if($ejecutar2){
+        mysqli_stmt_bind_param($nombrestmt, "ss", $nombre, $actual);
+        //$ejecutar2=mysqli_query($conn,$nombresql);
+        if(mysqli_stmt_execute($nombrestmt)){
           ?> 
           <h3 class="bien">¡Nombre modificado correctamente!</h3>
             <?php
@@ -88,8 +91,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
     
     if(!empty($apellidos)){
-        $ejecutar7=mysqli_query($conn,$apellidossql);
-        if($ejecutar7){
+        mysqli_stmt_bind_param($apellidosstmt, "ss", $apellidos, $actual);
+        //$ejecutar7=mysqli_query($conn,$apellidossql);
+        if(mysqli_stmt_execute($apellidosstmt)){
           ?> 
           <h3 class="bien">¡Apellido modificado correctamente!</h3>
             <?php
@@ -97,58 +101,53 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     if(!empty($telefono)){
-      $ejecutar3=mysqli_query($conn,$telefonosql);
-      if($ejecutar3){
-        ?> 
-        <h3 class="bien">¡Telefono modificado correctamente!</h3>
-          <?php
-      }
+        mysqli_stmt_bind_param($telefonostmt, "ss", $telefono, $actual);
+        //$ejecutar3=mysqli_query($conn,$telefonosql);
+        if($mysqli_stmt_execute($telefonostmt)){
+            ?> 
+            <h3 class="bien">¡Telefono modificado correctamente!</h3>
+            <?php
+        }
     }
 
     if(!empty($fecha_nacimiento)){
-      $ejecutar4=mysqli_query($conn,$fechasql);
-      if($ejecutar4){
-        ?> 
-        <h3 class="bien">¡Fecha modificada correctamente!</h3>
-          <?php
-      }
+        mysqli_stmt_bind_param($fechastmt, "ss", $fecha_nacimiento, $actual);
+        //$ejecutar4=mysqli_query($conn,$fechasql);
+        if($mysqli_stmt_execute($fechastmt)){
+            ?> 
+            <h3 class="bien">¡Fecha modificada correctamente!</h3>
+            <?php
+        }
     }
 
     if(!empty($email)){
-      $ejecutar5=mysqli_query($conn,$emailsql);
-      if($ejecutar5){
-        ?> 
-              <h3 class="bien">¡Email modificado correctamente!</h3>
-                <?php
-      }
+        mysqli_stmt_bind_param($emailstmt, "ss", $email, $actual);
+        //$ejecutar5=mysqli_query($conn,$emailsql);
+        if($mysqli_stmt_execute($emailstmt)){
+            ?> 
+                <h3 class="bien">¡Email modificado correctamente!</h3>
+                    <?php
+        }
     }
 
     if(!empty($password)){
-      $ejecutar6=mysqli_query($conn,$contrasenasql);
-      if($ejecutar6){
-        ?> 
-              <h3 class="bien">¡Contraseña modificada correctamente!</h3>
-                <?php
-      }
+        mysqli_stmt_bind_param($contrasenastmt, "ss", $password, $actual);
+        //$ejecutar6=mysqli_query($conn,$contrasenasql);
+        if($mysqli_stmt_execute($contrasenastmt)){
+            ?> 
+                <h3 class="bien">¡Contraseña modificada correctamente!</h3>
+                    <?php
+        }
     }
 
-    /*
-    // Actualiza la información del usuario en la base de datos (debes implementar esta lógica)
-    $sql = "UPDATE usuarios SET nombre=?, apellidos=?, dni=?, telefono=?, fecha_nacimiento=?, email=?, contraseña=? WHERE dni=?";
-    $stmt = mysqli_prepare($conn, $sql);
-    mysqli_stmt_bind_param($stmt, "ssssssss", $nombre, $apellidos, $dni, $telefono, $fechaNacimiento, $email, $contraseña, $dni);
-
-    if (mysqli_stmt_execute($stmt)) {
-        // Redirige al usuario a la página de perfil actualizada
-        header("Location: ajustes_cuenta.php");
-        exit();
-    } else {
-        echo "Error al actualizar la información del usuario: " . mysqli_error($conn);
-    }
-
-    mysqli_stmt_close($stmt);
+    mysqli_stmt_close($nombrestmt);
+    mysqli_stmt_close($apellidosstmt);
+    mysqli_stmt_close($telefonostmt);
+    mysqli_stmt_close($fechastmt);
+    mysqli_stmt_close($emailstmt);
+    mysqli_stmt_close($contrasenastmt);
     mysqli_close($conn);
-    */
+    
 }
 ?>
 
@@ -171,19 +170,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             <form id="ajustes-form" action="ajustes_cuenta.php" method="POST" onsubmit="return modificarUsuario();">
                 <label for="nombre">Nombre:</label>
-                <input type="text" id="nombre" name="nombre" placeholder="<?php echo $nm; ?>"><br>
+                <input type="text" id="nombre" name="nombre" placeholder="<?php echo descifrar($nm); ?>"><br>
 
                 <label for="apellidos">Apellidos:</label>
-                <input type="text" id="apellidos" name="apellidos" placeholder="<?php echo $ap; ?>"><br>
+                <input type="text" id="apellidos" name="apellidos" placeholder="<?php echo descifrar($ap); ?>"><br>
 
                 <label for="telefono">Teléfono:</label>
-                <input type="text" id="telefono" name="telefono" placeholder="<?php echo $tlf; ?>"><br>
+                <input type="text" id="telefono" name="telefono" placeholder="<?php echo descifrar($tlf); ?>"><br>
 
                 <label for="fecha_nacimiento">Fecha de Nacimiento:</label>
-                <input type="date" id="fecha_nacimiento" name="fecha_nacimiento" placeholder="<?php echo $fn; ?>"><br>
+                <input type="date" id="fecha_nacimiento" name="fecha_nacimiento" placeholder="<?php echo descifrar($fn); ?>"><br>
 
                 <label for="email">Email:</label>
-                <input type="email" id="email" name="email" placeholder="<?php echo $em; ?>"><br>
+                <input type="email" id="email" name="email" placeholder="<?php echo descifrar($em); ?>"><br>
 
                 <label for="username">Nombre de Usuario:</label>
                 <input type="text" id="username" name="username"><br>
@@ -206,57 +205,3 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </main>
 </body>
 </html>
-
-<?php
-/*
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Recupera los datos del formulario
-    $nombre = $_POST["nombre"];
-    $apellidos = $_POST["apellidos"];
-    $telefono = $_POST["telefono"];
-    $fechaNacimiento = $_POST["fecha_nacimiento"];
-    $email = $_POST["email"];
-    $usuario = $_POST["username"];
-    $contraseña = $_POST["password"];
-
-
-    
-    // Verifica la conexión
-    if (!$conn) {
-        die("La conexión a la base de datos falló: " . mysqli_connect_error());
-    }
-
-    // Crea la consulta SQL para insertar el nuevo usuario en la tabla
-    //$sql = "INSERT INTO usuarios (nombre, apellidos, dni, telefono, fecha_nacimiento, email, usuario, contraseña) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-    $sql = "UPDATE INTO usuarios SET nombre=?, apellidos=?, telefono=?, fecha_nacimiento=?, email=?, usuario=?, contraseña=? WHERE ";
-
-    // Prepara la consulta SQL
-    $stmt = mysqli_prepare($conn, $sql);
-
-    //Verificar que la función 'mysqli_prepare' haya tenido éxito
-    if (!$stmt) {
-        die("Error al preparar la consulta SQL: " . mysqli_error($conn));
-    }
-
-    // Asocia los parámetros con los valores
-    mysqli_stmt_bind_param($stmt, "ssssssss", $nombre, $apellidos, $dni, $telefono, $fechaNacimiento, $email, $usuario, $contraseña);
-
-    // Ejecuta la consulta SQL
-    if (mysqli_stmt_execute($stmt)) {
-        //echo "Registro exitoso. ¡Bienvenido, $nombre!";
-        session_start();
-        $_SESSION["usuario"] = $usuario;
-        $_SESSION["dni"] = $dni;
-        header("Location: principal.php");
-        exit();
-    } else {
-        //echo "Error al registrar el usuario: " . mysqli_error($conn);
-    }
-
-    // Cierra la conexión y la declaración
-    mysqli_stmt_close($stmt);
-    mysqli_close($conn);
-
-}
-*/
-?>

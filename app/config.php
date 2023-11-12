@@ -16,7 +16,7 @@ $conn = mysqli_connect($hostname, $username, $password, $db);
 if ($conn->connect_error) {
     die("La conexión a la base de datos falló: " . $conn->connect_error);
 }
-*/
+
 
 // phpinfo();
   $hostname = "db";

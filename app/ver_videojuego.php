@@ -47,13 +47,24 @@ if (isset($_GET['id'])) {
 
     // Crea la consulta SQL para insertar el nuevo usuario en la tabla
     $sql = "SELECT * FROM mytable WHERE id = $videojuegoId";
-    
 
     // Prepara la consulta SQL
+    $stmt = mysqli_prepare($conn, $sql);
+    
     //Verificar que la función 'mysqli_prepare' haya tenido éxito
+    if (!$stmt) {
+        die("Error al preparar la consulta SQL: " . $conn->error);
+    }
+
+    //Valores de los parametros
+    mysqli_stmt_bind_param($stmt, "i", $videojuegoId);
+
+    //Ejecutar la consulta preparada
+    mysqli_stmt_execute($stmt);
     
-    $result = $conn->query($sql);
-    
+    //Obtener el resultado
+    $result = mysqli_stmt_get_result($stmt);    
+
     if ($result->num_rows > 0){
         $row = $result->fetch_assoc();
         echo "<h2>" . $row["Name"] . "</h2>";
@@ -65,8 +76,10 @@ if (isset($_GET['id'])) {
 
     }
 
+    //Cierra la consulta preparada
+    mysqli_stmt_close($stmt);
+
     // Cierra la conexión y la declaración
-    
     mysqli_close($conn);
     
 ?>

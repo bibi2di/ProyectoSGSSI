@@ -25,17 +25,33 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Actualiza los datos en la base de datos
     $dni = $_SESSION['DNI'];
-    $actualizarDatos = "UPDATE Usuario SET Nombre='$nombre', Apellidos='$apellidos', Telefono='$telefono', FechaNacimiento='$fechaNacimiento', Email='$email', Usuario='$usuario', Contraseña='$contraseña' WHERE DNI='$dni'";
-    
-    if (mysqli_query($conn, $actualizarDatos)) {
-        // Datos actualizados con éxito
-        header("Location: ajustes_cuenta.php?success=Datos actualizados correctamente");
-        exit();
+    $actualizarDatos = "UPDATE Usuario SET Nombre=?, Apellidos=?, Telefono=?, FechaNacimiento=?, Email=?, Usuario=?, Contraseña=? WHERE DNI=?";    // Preparar la consulta SQL
+    $stmt = mysqli_prepare($conn, $actualizarDatos);
+
+    // Verificar que la preparación fue exitosa
+    if ($stmt) {
+        // Asociar los parámetros con los valores
+        mysqli_stmt_bind_param($stmt, "ssssssss", $nombre, $apellidos, $telefono, $fechaNacimiento, $email, $usuario, $contraseña, $dni);
+        
+        // Ejecutar la consulta preparada
+        if (mysqli_query($conn, $actualizarDatos)) {
+            // Datos actualizados con éxito
+            header("Location: ajustes_cuenta.php?success=Datos actualizados correctamente");
+            exit();
+        } else {
+            // Error al actualizar los datos
+            header("Location: ajustes_cuenta.php?error=Error al actualizar los datos");
+            exit();
+        }
     } else {
-        // Error al actualizar los datos
-        header("Location: ajustes_cuenta.php?error=Error al actualizar los datos");
+        // Error al preparar la consulta
+        header("Location: ajustes_cuenta.php?error=Error al preparar la consulta");
         exit();
     }
+
+    // Cerrar la consulta preparada y la conexión
+    mysqli_stmt_close($stmt);
+    mysqli_close($conn);
 } else {
     // Si no es una solicitud POST, redirige al usuario a la página de ajustes_cuenta.php
     header("Location: ajustes_cuenta.php");

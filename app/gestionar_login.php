@@ -1,7 +1,7 @@
 <?php
-header("X-Frame-Options: SAMEORIGIN");
-header("X-Content-Type-Options: nosniff");
-header_remove("X-Powered-By");
+//header("X-Frame-Options: SAMEORIGIN");
+//header("X-Content-Type-Options: nosniff");
+//header_remove("X-Powered-By");
 
 include("config.php"); // Incluye el archivo de configuración
 include("funciones.php");
@@ -11,15 +11,15 @@ include("funciones.php");
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Recupera los datos del formulario
     $usuario = cifrar($_POST["username"]);
-    $contraseña = $_POST["password"];
-    $dni = $_POST["dni"];
+    $dni = cifrar($_POST ["dni"]);
+    $contr = $_POST["password"];
     // Verifica la conexión
     if (!$conn) {
         die("La conexión a la base de datos falló: " . mysqli_connect_error());
     }
 
     // Crea la consulta SQL para buscar al usuario en la tabla
-    $sql = "SELECT sal FROM usuarios_cod WHERE username = ?";
+    $sql = "SELECT * FROM usuarios_cod WHERE username = ?";
     #$sql2 = "SELECT dni FROM usuarios WHERE usuario = ? AND contraseña = ?";
 
     // Prepara la consulta SQL
@@ -38,40 +38,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Obtiene el resultado de la consulta
         $resultado= mysqli_stmt_get_result($stmt);
         if (mysqli_num_rows($resultado) === 1) {
-            $sal = "";
-            while ($row = mysqli_fetch_assoc($resultado)) {
-                $sal .= $row['sal'] . "\n"; // Puedes ajustar el formato según tus necesidades
-            }
-            //$contaseña_sal = "";
-            //$hash_contraseña = "";
-            $contraseña_sal = $contraseña.$sal;
-            $hash_contraseña = "f2ac777d7cd0a419a576f4f792f84c35e6ac5a335d69230166a221884144698d"; /*hash('sha256', $contraseña_sal); /*No me funciona el hash*/
-            $sql2 = "SELECT * FROM usuarios_cod WHERE username = ? AND password = ?";
-            $stmt2 = mysqli_prepare($conn, $sql2);
-            if (!$stmt2) {
-                die("Error al preparar la consulta SQL: " . mysqli_error($conn));
-            }
-            mysqli_stmt_bind_param($stmt2, "ss", $usuario, $hash_contraseña);
-            if (mysqli_stmt_execute($stmt2)) {
-                // Comprueba si se encontró un usuario con las credenciales proporcionadas
-                $resultado2=mysqli_stmt_get_result($stmt2);
-                if (mysqli_num_rows($resultado2) === 1) { // Inicio de sesión exitoso
-                    // Recuperar DNI
-                    #mysqli_stmt_bind_param($stmt2, "ss", $usuario, $contraseña);
-                    #$dni = mysqli_stmt_get_result($stmt2);
-            
-                    // Crear la sesión
-                    session_start();
+            $row = $resultado->fetch_assoc();
+            $hash_contr = $row['password']; // Puedes ajustar el formato según tus necesidades
+            $dni_cifr = $row['dni'];
+            if (password_verify($contr, $hash_contr) && $dni == $dni_cifr) { // Inicio de sesión exitoso
+                
                     $_SESSION["usuario"] = $usuario;
-                    $_SESSION['dni'] = $dni;
-            
-                    #$sesion=mysqli_fetch_array($usuario);
                     header("Location: principal.php"); // Redirige a la página de inicio
+                    exit();
                 } else {
                     // Credenciales incorrectas
                     // echo "Credenciales incorrectas...";
                     if ($_SESSION['incorrectosSeguidos'] == ''){
                         $_SESSION['incorrectosSeguidos'] = 1;
+                        echo "<script> window.location.replace('http://localhost:81/index.php'); </script> ";
                     }
                     else {
                         $_SESSION['incorrectosSeguidos'] = $_SESSION['incorrectosSeguidos'] + 1;
@@ -85,10 +65,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             echo "<script> window.location.replace('http://localhost:81/index.php'); </script> ";
                         }
                     }
-                exit();
                 }
             }
-        }
         else {
             echo "Error: No existe el usuario";
         }

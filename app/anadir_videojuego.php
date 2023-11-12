@@ -11,7 +11,7 @@ if (!isset($_SESSION["usuario"])) {
 }
 include("config.php"); // Incluye el archivo de configuración
 
-session_start();
+//session_start();
 if (!isset($_SESSION["usuario"])) {
     header("Location: index.php"); // Redirigir a la página de inicio de sesión si el usuario no está autenticado
     exit();

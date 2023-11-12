@@ -16,19 +16,19 @@ db:
     - ./mysql:/var/lib/mysql
   environment:
     MYSQL_ROOT_PASSWORD: root
-    MYSQL_USER: admin
-    MYSQL_PASSWORD: test
+    MYSQL_USER: administradoresroot
+    MYSQL_PASSWORD: ProyectoSGSSI#2023
     MYSQL_DATABASE: database
   ports:
     - "8889:3306"
 
 phpmyadmin:
-  image: phpmyadmin/phpmyadmin:latest
+  image: phpmyadmin/phpmyadmin:5.2.1
   links:
     - db
   ports:
     - 8890:80
   environment:
-    MYSQL_USER: admin
-    MYSQL_PASSWORD: test
+    MYSQL_USER: administradoresroot
+    MYSQL_PASSWORD: ProyectoSGSSI#2023
     MYSQL_DATABASE: database
